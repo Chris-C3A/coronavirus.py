@@ -4,7 +4,6 @@ from bs4 import BeautifulSoup
 import os
 import sys
 
-
 # TODO
 # add speech recognition feature
 # add UI
@@ -43,7 +42,6 @@ def main():
         clear_screen()
         exit(0)
 
-
 # get general data of corona virus
 def get_general_status():
     maincounters = soup.find_all('div', id='maincounter-wrap')
@@ -58,10 +56,10 @@ def get_general_status():
 def get_status(country):
     result = soup.find('tbody')
     trs = result.find_all('tr')
+    col = ["Country","Total Cases", "New Cases", "Total Deaths", "New Deaths", "Total Recovered", "Active Cases", "Serious/Critical", "Tot Cases/1Mpop"]
     for tr in trs:
         td = tr.find('td')
         # print(td.text.strip(), end='\n'*2)
-        col = ["Country","Total Cases", "New Cases", "Total Deaths", "New Deaths", "Total Recovered", "Active Cases", "Serious/Critical", "Tot Cases/1Mpop"]
         if country == td.text.strip():
             tds = tr.find_all('td')
             data = {}
