@@ -1,6 +1,9 @@
 #!/usr/local/bin/python3 
 import requests
 from bs4 import BeautifulSoup
+import os
+import sys
+
 
 # TODO
 # add speech recognition feature
@@ -12,28 +15,33 @@ URL = 'https://www.worldometers.info/coronavirus/'
 page = requests.get(URL)
 soup = BeautifulSoup(page.content, 'html.parser')
 
+# get all infected countries
+result = soup.find('tbody')
+trs = result.find_all('tr')
+for tr in trs:
+    td = tr.find('td')
+    infected_countries.append(td.text.strip())
+
 def main():
-    # get all infected countries
-    result = soup.find('tbody')
-    trs = result.find_all('tr')
-    for tr in trs:
-        td = tr.find('td')
-        # print(td.text.strip(), end='\n'*2)
-        infected_countries.append(td.text.strip())
-    print("Type A to check the general status for corona virus")
-    print("Or Enter a country name to check its status", end='\n'*2)
+    print("* Type A to check the general status for corona virus")
+    print("* Enter a country's name to check its current status")
+    print("* Use q to exit the program", end='\n'*2)
 
     inp = input("> ")
     print('', end='\n'*3)
 
-    if inp == 'A' or inp == 'a':
+    if inp in ['A', 'a']:
         get_general_status()
     elif inp in infected_countries or inp[0].upper() + inp[1::] in infected_countries:
         # change first letter to upercase
-        inp = inp[0].upper() + inp[1::]
-        data = get_status(inp)
+        country = inp[0].upper() + inp[1::]
+        data = get_status(country)
         for key in data:
             print(key, data[key], sep=": ", end='\n'*2)
+    elif inp in ['Q', 'q']:
+        print('exiting...')
+        clear_screen()
+        exit(0)
 
 
 # get general data of corona virus
@@ -45,6 +53,7 @@ def get_general_status():
         if None in (count, title):
             continue   
         print(title.text.strip(), count.text.strip(), sep="  ")
+    print('', end='\n'*3)
 
 def get_status(country):
     result = soup.find('tbody')
@@ -67,6 +76,28 @@ def get_status(country):
 
     # return t_cases.text.strip()
 
+def get_platform():
+    platforms = {
+        'linux1' : 'Linux',
+        'linux2' : 'Linux',
+        'darwin' : 'OS X',
+        'win32' : 'Windows'
+    }
+    if sys.platform not in platforms:
+        return sys.platform
+    return platforms[sys.platform]
+
+def clear_screen():
+    operating_system = get_platform()
+    print(operating_system)
+    if operating_system == "Windows":
+        os.system("cls")
+    elif operating_system in ["Linux", "OS X"]:
+        os.system("clear")
 # run program
 if __name__ == "__main__":
-    main()
+    clear_screen()
+    while True:
+        main()
+        input("ENTER TO CONTINUE...")
+        clear_screen()
