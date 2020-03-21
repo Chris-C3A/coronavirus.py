@@ -5,6 +5,7 @@ import os
 import sys
 
 # TODO
+# show results on a webserver (flask)
 # add speech recognition feature
 # add UI
 
@@ -19,7 +20,8 @@ result = soup.find('tbody')
 trs = result.find_all('tr')
 for tr in trs:
     td = tr.find('td')
-    infected_countries.append(td.text.strip())
+    infected_country = td.text.strip()
+    infected_countries.append(infected_country.lower())
 
 def main():
     print("* Type A to check the general status for corona virus")
@@ -31,10 +33,8 @@ def main():
 
     if inp in ['A', 'a']:
         get_general_status()
-    elif inp in infected_countries or inp[0].upper() + inp[1::] in infected_countries:
-        # change first letter to upercase
-        country = inp[0].upper() + inp[1::]
-        data = get_status(country)
+    elif inp.lower() in infected_countries:
+        data = get_status(inp.lower())
         for key in data:
             print(key, data[key], sep=": ", end='\n'*2)
     elif inp in ['Q', 'q']:
@@ -60,7 +60,7 @@ def get_status(country):
     for tr in trs:
         td = tr.find('td')
         # print(td.text.strip(), end='\n'*2)
-        if country == td.text.strip():
+        if country == td.text.strip().lower():
             tds = tr.find_all('td')
             data = {}
             for td in tds:
